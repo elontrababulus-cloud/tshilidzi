@@ -1,11 +1,9 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-// TODO: Add SDKs for Analytics or other products if needed
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 const firebaseConfig = {
-    // REPLACE THE FOLLOWING WITH YOUR FIREBASE CONFIG VALUES
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -14,10 +12,21 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
+// Reuse existing app on hot reload, initialise fresh otherwise
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Connect to local emulators — only once per page load
+if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true") {
+    const g = globalThis as any;
+    if (!g.__firebaseEmulatorsConnected) {
+        g.__firebaseEmulatorsConnected = true;
+        connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+        connectFirestoreEmulator(db, "localhost", 8080);
+        connectStorageEmulator(storage, "localhost", 9199);
+    }
+}
 
 export { app, auth, db, storage };

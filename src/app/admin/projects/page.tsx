@@ -1,152 +1,138 @@
 "use client";
 
-import { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { getProjects, deleteProject } from '@/lib/services/projects';
 import { Project } from '@/types/project';
 
+const categoryLabels: Record<Project['category'], string> = {
+    youth: 'Youth & Women',
+    climate: 'Climate Resilience',
+    education: 'Education',
+    governance: 'Governance',
+};
+
+const statusColors: Record<Project['status'], { bg: string; color: string }> = {
+    active: { bg: '#d4edda', color: '#155724' },
+    upcoming: { bg: '#fff3cd', color: '#856404' },
+    completed: { bg: '#e2e3e5', color: '#383d41' },
+};
+
 export default function AdminProjectsPage() {
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [formData, setFormData] = useState<Omit<Project, 'id' | 'dateCreated'>>({
-        title: '',
-        category: 'youth',
-        status: 'active',
-        summary: '',
-        description: '',
-        imageUrl: '',
-    });
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setImageFile(e.target.files[0]);
-        }
-    };
+    useEffect(() => {
+        loadProjects();
+    }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const loadProjects = async () => {
         setLoading(true);
-        setSuccess('');
-
         try {
-            let downloadURL = '';
-
-            if (imageFile) {
-                const storageRef = ref(storage, `projects/${Date.now()}_${imageFile.name}`);
-                const snapshot = await uploadBytes(storageRef, imageFile);
-                downloadURL = await getDownloadURL(snapshot.ref);
-            }
-
-            await addDoc(collection(db, "projects"), {
-                ...formData,
-                imageUrl: downloadURL,
-                dateCreated: new Date(),
-            });
-            setSuccess('Project created successfully!');
-            setFormData({
-                title: '',
-                category: 'youth',
-                status: 'active',
-                summary: '',
-                description: '',
-                imageUrl: '',
-            });
-            setImageFile(null);
+            const data = await getProjects();
+            setProjects(data);
         } catch (error) {
-            console.error("Error creating project: ", error);
-            alert("Error creating project");
+            console.error('Failed to load projects', error);
         } finally {
             setLoading(false);
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this project?')) return;
+        try {
+            await deleteProject(id);
+            await loadProjects();
+        } catch (error) {
+            console.error('Failed to delete project', error);
+            alert('Failed to delete project');
+        }
+    };
+
     return (
         <div>
-            <h1 style={{ marginBottom: '2rem' }}>Manage Projects</h1>
-
-            {success && <div style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '1rem', borderRadius: '4px', marginBottom: '1rem' }}>{success}</div>}
-
-            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px' }}>
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem' }}>Add New Project</h2>
-                <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>Title</label>
-                        <input
-                            type="text"
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                            required
-                        />
-                    </div>
-
-                    <div className="grid-cols-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Category</label>
-                            <select
-                                value={formData.category}
-                                onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                                style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                            >
-                                <option value="youth">Youth & Women</option>
-                                <option value="climate">Climate Resilience</option>
-                                <option value="education">Education</option>
-                                <option value="governance">Governance</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Status</label>
-                            <select
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                                style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                            >
-                                <option value="active">Active</option>
-                                <option value="upcoming">Upcoming</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>Project Image</label>
-                        <input
-                            type="file"
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                        />
-                    </div>
-
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>Summary (Short)</label>
-                        <input
-                            type="text"
-                            value={formData.summary}
-                            onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                            required
-                        />
-                    </div>
-
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem' }}>Full Description</label>
-                        <textarea
-                            rows={5}
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}
-                            required
-                        ></textarea>
-                    </div>
-
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
-                        {loading ? 'Uploading & Creating...' : 'Create Project'}
-                    </button>
-                </form>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h1>Manage Projects</h1>
+                <Link href="/admin/projects/create" className="btn btn-primary">
+                    + New Project
+                </Link>
             </div>
+
+            {loading ? (
+                <p>Loading projects...</p>
+            ) : projects.length === 0 ? (
+                <div style={{ backgroundColor: 'white', padding: '3rem', borderRadius: '8px', textAlign: 'center', color: '#666' }}>
+                    <p>No projects yet.</p>
+                    <Link href="/admin/projects/create" className="btn btn-primary" style={{ marginTop: '1rem', display: 'inline-block' }}>
+                        Create your first project
+                    </Link>
+                </div>
+            ) : (
+                <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                            <tr style={{ textAlign: 'left', borderBottom: '2px solid #eee', backgroundColor: '#fafafa' }}>
+                                <th style={{ padding: '1rem' }}>Title</th>
+                                <th style={{ padding: '1rem' }}>Category</th>
+                                <th style={{ padding: '1rem' }}>Status</th>
+                                <th style={{ padding: '1rem' }}>Created</th>
+                                <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {projects.map((project) => {
+                                const status = statusColors[project.status];
+                                return (
+                                    <tr key={project.id} style={{ borderBottom: '1px solid #eee' }}>
+                                        <td style={{ padding: '1rem', fontWeight: '500' }}>
+                                            {project.title}
+                                            {project.imageUrl && (
+                                                <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', color: '#888' }}>📷</span>
+                                            )}
+                                        </td>
+                                        <td style={{ padding: '1rem', color: '#555' }}>
+                                            {categoryLabels[project.category]}
+                                        </td>
+                                        <td style={{ padding: '1rem' }}>
+                                            <span style={{
+                                                padding: '0.25rem 0.6rem',
+                                                borderRadius: '4px',
+                                                backgroundColor: status.bg,
+                                                color: status.color,
+                                                fontSize: '0.8rem',
+                                                fontWeight: '500',
+                                            }}>
+                                                {project.status}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '1rem', color: '#888', fontSize: '0.9rem' }}>
+                                            {project.dateCreated
+                                                ? new Date(project.dateCreated).toLocaleDateString()
+                                                : 'N/A'}
+                                        </td>
+                                        <td style={{ padding: '1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                            <Link
+                                                href={`/admin/projects/${project.id}`}
+                                                className="btn btn-outline"
+                                                style={{ marginRight: '0.5rem', padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
+                                            >
+                                                Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(project.id!)}
+                                                className="btn"
+                                                style={{ backgroundColor: '#dc3545', color: 'white', padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     );
 }
