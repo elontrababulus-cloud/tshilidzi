@@ -1,11 +1,16 @@
 import Link from 'next/link';
+import { getTeamMembers } from '@/lib/services/team';
 
 export const metadata = {
     title: 'About Us | Tshilidzi Development Trust',
     description: 'Learn about our history, mission, and the team driving change in Zimbabwe.',
 };
 
-export default function AboutPage() {
+export const revalidate = 60;
+
+export default async function AboutPage() {
+    const team = await getTeamMembers();
+
     return (
         <>
             <section className="section section-bg">
@@ -67,12 +72,21 @@ export default function AboutPage() {
                         TDT is governed by a diverse Board of Trustees comprising experts in law, development, finance, and education, ensuring transparency and strategic direction.
                     </p>
                     <div className="grid-cols-3">
-                        {/* Team Member Placeholder */}
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} style={{ padding: '1rem' }}>
-                                <div style={{ width: '120px', height: '120px', backgroundColor: '#ddd', borderRadius: '50%', margin: '0 auto 1rem auto' }}></div>
-                                <h4>Board Member {i}</h4>
-                                <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>Portfolio / Title</p>
+                        {team.map(member => (
+                            <div key={member.id} style={{ padding: '1rem' }}>
+                                <div style={{
+                                    width: '120px', height: '120px', borderRadius: '50%',
+                                    margin: '0 auto 1rem auto', overflow: 'hidden',
+                                    backgroundColor: '#ddd',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                }}>
+                                    {member.photoUrl
+                                        ? <img src={member.photoUrl} alt={member.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        : <span style={{ fontSize: '2rem', color: '#999' }}>{member.name.charAt(0)}</span>
+                                    }
+                                </div>
+                                <h4 style={{ color: 'var(--color-primary)' }}>{member.name}</h4>
+                                <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{member.role}</p>
                             </div>
                         ))}
                     </div>

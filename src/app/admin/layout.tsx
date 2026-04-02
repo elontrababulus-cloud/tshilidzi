@@ -9,6 +9,7 @@ const navLinks = [
     { href: '/admin', label: 'Dashboard' },
     { href: '/admin/news', label: 'Manage News' },
     { href: '/admin/projects', label: 'Manage Projects' },
+    { href: '/admin/team', label: 'Manage Team' },
     { href: '/admin/settings', label: 'Settings' },
 ];
 
