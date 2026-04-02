@@ -6,7 +6,7 @@ export const metadata = {
     description: 'Learn about our history, mission, and the team driving change in Zimbabwe.',
 };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export default async function AboutPage() {
     let team: Awaited<ReturnType<typeof getTeamMembers>> = [];
