@@ -21,7 +21,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     // Dynamic routes (News Articles)
-    const articles = await getNewsArticles(true);
+    let articles: Awaited<ReturnType<typeof getNewsArticles>> = [];
+    try { articles = await getNewsArticles(true); } catch { articles = []; }
     const articleRoutes = articles.map((article) => ({
         url: `${baseUrl}/news/${article.id}`,
         lastModified: new Date(article.publishedAt),

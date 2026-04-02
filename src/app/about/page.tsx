@@ -9,7 +9,7 @@ export const metadata = {
 export const revalidate = 60;
 
 export default async function AboutPage() {
-    let team = [];
+    let team: Awaited<ReturnType<typeof getTeamMembers>> = [];
     try { team = await getTeamMembers(); } catch { team = []; }
 
     return (
