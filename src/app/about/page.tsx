@@ -9,7 +9,8 @@ export const metadata = {
 export const revalidate = 60;
 
 export default async function AboutPage() {
-    const team = await getTeamMembers();
+    let team = [];
+    try { team = await getTeamMembers(); } catch { team = []; }
 
     return (
         <>
