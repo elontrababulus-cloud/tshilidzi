@@ -8,42 +8,42 @@ runConfig:
 
 env:
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
-    secret: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyB_-5H71v2cGqepy5-0QF5o5IHO3Sx57CU"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-    secret: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "tshilidzi-org.firebaseapp.com"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    secret: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "tshilidzi-org"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    secret: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "tshilidzi-org.firebasestorage.app"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    secret: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "56620286182"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    secret: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:56620286182:web:e174869c93aef23bd87b27"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-    secret: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: "G-8NDNK2R0ME"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_USE_FIREBASE_EMULATOR
-    secret: NEXT_PUBLIC_USE_FIREBASE_EMULATOR
+    value: "false"
     availability:
       - BUILD
       - RUNTIME
