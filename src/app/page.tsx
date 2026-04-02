@@ -1,9 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import styles from './page.module.css';
+import { BreadcrumbSchema } from '@/components/seo/JsonLd';
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'Tshilidzi Development Trust is a Zimbabwean NGO dedicated to youth empowerment, education access, and community development programs across Zimbabwe.',
+};
 
 export default function Home() {
   return (
     <>
+      <BreadcrumbSchema items={[{ name: 'Home', url: '/' }]} />
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={`container ${styles.heroContent}`}>

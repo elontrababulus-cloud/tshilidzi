@@ -1,6 +1,24 @@
 import { getNewsArticleById } from "@/lib/services/news";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { ArticleSchema, BreadcrumbSchema } from "@/components/seo/JsonLd";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const article = await getNewsArticleById(resolvedParams.id);
+  
+  if (!article || article.status !== 'published') {
+    return {
+      title: 'Article Not Found',
+    };
+  }
+  
+  return {
+    title: article.title,
+    description: article.summary,
+  };
+}
 
 // This is a Server Component
 export default async function NewsArticlePage({ params }: { params: Promise<{ id: string }> }) {
@@ -11,8 +29,22 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
         notFound();
     }
 
+    const publishedDate = new Date(article.publishedAt).toISOString();
+
     return (
         <article style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
+            <ArticleSchema
+              title={article.title}
+              description={article.summary}
+              datePublished={publishedDate}
+              imageUrl={article.imageUrl}
+              authorName={article.author}
+            />
+            <BreadcrumbSchema items={[
+              { name: 'Home', url: '/' },
+              { name: 'News & Updates', url: '/news' },
+              { name: article.title, url: `/news/${article.id}` }
+            ]} />
             {/* Hero / Header */}
             <div style={{ backgroundColor: 'var(--color-surface)', padding: '4rem 0 3rem 0', marginBottom: '3rem' }}>
                 <div className="container">

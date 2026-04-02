@@ -1,14 +1,16 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { BreadcrumbSchema } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-    title: 'Get Involved | Tshilidzi Development Trust',
-    description: 'Join hands with Tshilidzi to build a resilient, digital-ready Zimbabwe. Volunteer, mentor, partner, or donate today.',
+    title: 'Get Involved',
+    description: 'Join Tshilidzi Development Trust as a volunteer, donor, or partner. Help us empower Zimbabwean youth through education and community programs.',
 };
 
 export default function GetInvolvedPage() {
     return (
         <>
+            <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Get Involved', url: '/get-involved' }]} />
             <section className="section section-bg">
                 <div className="container text-center">
                     <h1>Be the Change in Our Community</h1>

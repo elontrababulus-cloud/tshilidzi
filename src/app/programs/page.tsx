@@ -1,11 +1,14 @@
+import { BreadcrumbSchema } from '@/components/seo/JsonLd';
+
 export const metadata = {
-    title: 'Our Programs | Tshilidzi Development Trust',
-    description: 'Explore our key programs in Youth Empowerment, Climate Resilience, Education, and Digital Transformation.',
+    title: 'Our Programs',
+    description: 'Explore Tshilidzi Development Trust\'s youth empowerment and education programs in Zimbabwe — from skills training to mentorship and community outreach.',
 };
 
 export default function ProgramsPage() {
     return (
         <>
+            <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'Our Programs', url: '/programs' }]} />
             <section className="section section-bg">
                 <div className="container text-center">
                     <h1>Our Work / Programs</h1>

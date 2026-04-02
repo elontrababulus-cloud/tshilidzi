@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { getTeamMembers } from '@/lib/services/team';
+import { BreadcrumbSchema } from '@/components/seo/JsonLd';
 
 export const metadata = {
-    title: 'About Us | Tshilidzi Development Trust',
-    description: 'Learn about our history, mission, and the team driving change in Zimbabwe.',
+    title: 'About Us',
+    description: 'Learn about Tshilidzi Development Trust — our mission, vision, values, and the team driving youth empowerment and education in Zimbabwe.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +15,7 @@ export default async function AboutPage() {
 
     return (
         <>
+            <BreadcrumbSchema items={[{ name: 'Home', url: '/' }, { name: 'About Us', url: '/about' }]} />
             <section className="section section-bg">
                 <div className="container">
                     <h1 className="text-center" style={{ marginBottom: '2rem' }}>About Tshilidzi Development Trust</h1>

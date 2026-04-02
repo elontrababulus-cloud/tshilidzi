@@ -1,0 +1,23 @@
+# Tshilidzi Development Trust
+> A Zimbabwean NGO dedicated to youth empowerment and education.
+
+Tshilidzi Development Trust works across Zimbabwe to empower young people through education access, skills development, mentorship, and community programs.
+
+## Pages
+- Home: https://tshilidzi.org
+- About: https://tshilidzi.org/about
+- Programs: https://tshilidzi.org/programs
+- Projects: https://tshilidzi.org/projects
+- News: https://tshilidzi.org/news
+- Contact: https://tshilidzi.org/contact
+- Get Involved: https://tshilidzi.org/get-involved
+
+## Focus Areas
+- Youth empowerment
+- Education access
+- Skills and vocational training
+- Community development
+- Zimbabwe
+
+## Optional
+- Sitemap: https://tshilidzi.org/sitemap.xml
