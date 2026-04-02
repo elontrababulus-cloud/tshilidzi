@@ -17,7 +17,7 @@ export default function LoginPage() {
             await signInWithEmailAndPassword(auth, email, password);
             router.push('/admin'); // Redirect to admin dashboard on success
         } catch (err: any) {
-            setError('Failed to login. Please check your credentials.');
+            setError(err?.code || err?.message || 'Unknown error');
             console.error(err);
         }
     };
